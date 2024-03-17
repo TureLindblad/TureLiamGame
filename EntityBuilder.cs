@@ -1,50 +1,50 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XnaGame
+namespace TopDownRPG
 {
-    public enum TerrainEnum
-    {
-        Grass, Water, Rock, Brick
-    }
     public class EntityBuilder
     {
-        public Dictionary<TerrainEnum, Entity> TerrainEntities;
-        public List<Entity> MonsterEntities;
+        public MainMapScene MainMap {  get; private set; }
+        public MapEastScene MapEast {  get; private set; }
+        public MapNorthScene MapNorth {  get; private set; }
+
+        public Player PlayerCharacter;
 
         public EntityBuilder()
         {
-            BuildTerrain();
-            SpawnMonsters(4);
+            PlayerCharacter = new Player(Assets.PlayerTexture, "CockSlayer3000");
         }
 
-        private void BuildTerrain()
+        public void BuildMaps(Game1 game)
         {
-            Grass GrassObject = new Grass();
-            Water WaterObject = new Water();
-            Rock RockObject = new Rock();
-            Brick BrickObject = new Brick();
+            MainMap = new MainMapScene(game);
+            MapEast = new MapEastScene(game);
+            MapNorth = new MapNorthScene(game);
 
-            TerrainEntities = new Dictionary<TerrainEnum, Entity>()
-            {
-                { TerrainEnum.Grass, GrassObject },
-                { TerrainEnum.Water, WaterObject },
-                { TerrainEnum.Rock, RockObject },
-                { TerrainEnum.Brick, BrickObject }
-            };
+            MainMap.ConnectingMaps[Tuple.Create('y', -1)] = MapNorth;
+            MainMap.ConnectingMaps[Tuple.Create('x', 1)] = MapEast;
+
+            MapEast.ConnectingMaps[Tuple.Create('x', -1)] = MainMap;
+
+            MapNorth.ConnectingMaps[Tuple.Create('y', 1)] = MainMap;
         }
 
-        private void SpawnMonsters(int amount)
+        public List<Entity> SpawnMonsters(int amount)
         {
-            MonsterEntities = new List<Entity>();
+            List<Entity> monsterEntities = new List<Entity>();
+            Random rnd = new Random();
 
             for (int i = 0; i < amount; i++)
             {
-                MonsterEntities.Add(new Monster());
+                monsterEntities.Add(new Monster(Assets.MonsterTexture, Assets.MonsterNames[rnd.Next(Assets.MonsterNames.Length)]));
             }
+
+            return monsterEntities;
         }
     }
 }

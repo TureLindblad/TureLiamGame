@@ -1,89 +1,74 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XnaGame
+namespace TopDownRPG
 {
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics;
-
     public abstract class Entity
     {
         public bool HasCollision { get; set; }
         public bool IsInteractable { get; set; }
-        public Entity()
+        public Texture2D Texture { get; set; }
+        public Entity(Texture2D texture)
         {
+            Texture = texture;
         }
     }
 
     public abstract class Creature : Entity
     {
-        public Creature() : base()
+        public int TranslateX { get; set; }
+        public int TranslateY { get; set; }
+        public string Name { get; }
+        public Creature(Texture2D texture, string name) : base(texture)
         {
             HasCollision = false;
+            Name = name;
         }
     }
 
     public class Player : Creature
     {
-        public int ModX {  get; set; }
-        public int ModY {  get; set; }
+        public int ModX { get; set; }
+        public int ModY { get; set; }
         public bool IsMoving { get; set; }
-        public Player() : base()
+        public MapGridScene AtScene { get; set; }
+        public Player(Texture2D texture, string name) : base(texture, name)
         {
             ModX = 2;
             ModY = 4;
             IsMoving = false;
         }
+
+        public void Update()
+        {
+
+        }
+
+        public void UpdateMoveAnimation()
+        {
+            if (IsMoving)
+            {
+                TranslateX = -100;
+            }
+            else
+            {
+                TranslateX = 0;
+                TranslateY = 0;
+            }
+        }
     }
 
     public class Monster : Creature
     {
-        public Monster() : base()
+        public Monster(Texture2D texture, string name) : base(texture, name)
         {
             IsInteractable = true;
-        }
-    }
-
-    public class Terrain : Entity
-    {
-        public Terrain() : base()
-        {
-            
-        }
-    }
-
-    public class Grass : Terrain
-    {
-        public Grass() : base()
-        {
-            HasCollision = false;
-        }
-    }
-
-    public class Water : Terrain
-    {
-        public Water() : base()
-        {
-            HasCollision = true;
-        }
-    }
-
-    public class Rock : Terrain
-    {
-        public Rock() : base()
-        {
-            HasCollision = false;
-        }
-    }
-
-    public class Brick : Terrain
-    {
-        public Brick() : base()
-        {
-            HasCollision = true;
         }
     }
 }
